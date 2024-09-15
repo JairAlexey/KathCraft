@@ -1,0 +1,153 @@
+---
+import ThemeToggle from "./ThemeToggle.astro";
+import Cart from "./icons/Cart.astro";
+import Menu from "./icons/Menu.astro";
+
+const navItems = [
+  {
+    title: "Inicio",
+    label: "inicio",
+    url: "/#inicio",
+  },
+  {
+    title: "Productos",
+    label: "productos",
+    url: "/productos",
+  },
+  {
+    title: "Servicios",
+    label: "servicios",
+    url: "/#servicios",
+  },
+  {
+    title: "Contacto",
+    label: "contacto",
+    url: "/#contacto",
+  },
+];
+---
+
+<header class="fixed top-0 z-10 w-full py-4 px-4 md:px-40">
+  <nav
+    class="flex items-center justify-between w-full mx-auto px-4 py-2 max-w-7xl rounded-full bg-gray-800 shadow-lg relative"
+  >
+    <!-- Logo -->
+    <div class="flex items-center">
+      <a href="/#inicio"
+        ><img src="/Logo.svg" alt="Logo" class="h-9 sm:h-8 md:h-11 mr-2" /></a
+      >
+      <a href="/#inicio"
+        ><span class="text-red text-sm sm:text-base md:text-xl font-bold"
+          >KathCraft</span
+        ></a
+      >
+    </div>
+    <!-- Navigation Links -->
+    <div
+      class="flex-grow flex flex-wrap justify-end items-center space-x-1 sm:space-x-2 font-medium text-xs sm:text-sm md:text-base"
+    >
+      {
+        navItems.map((link) => (
+          <a
+            class="relative px-1 py-2 sm:px-2 transition hover:text-red-500 dark:hover:text-red-500 sm:block md:block hidden"
+            aria-label={link.label}
+            href={link.url}
+          >
+            {link.title}
+          </a>
+        ))
+      }
+    </div>
+    <!-- Dropdown Button for Mobile Only -->
+    <button
+      id="dropdownToggle"
+      class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-900 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-600 lg:hidden"
+      type="button"
+    >
+      <Menu />
+    </button>
+
+    <!-- Dropdown menu -->
+    <div
+      id="dropdownMenu"
+      class="hidden bg-gray-800 divide-y divide-gray-700 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600 absolute top-full right-0 mt-2"
+    >
+      <ul class="py-2 text-sm text-gray-200 dark:text-gray-200">
+        <li>
+          <a
+            href="/#inicio"
+            class="block px-4 py-2 hover:bg-gray-700 dark:hover:bg-gray-600"
+            >Inicio</a
+          >
+        </li>
+        <li>
+          <a
+            href="/productos"
+            class="block px-4 py-2 hover:bg-gray-700 dark:hover:bg-gray-600"
+            >Productos</a
+          >
+        </li>
+        <li>
+          <a
+            href="/#servicios"
+            class="block px-4 py-2 hover:bg-gray-700 dark:hover:bg-gray-600"
+            >Servicios</a
+          >
+        </li>
+        <li>
+          <a
+            href="/#contacto"
+            class="block px-4 py-2 hover:bg-gray-700 dark:hover:bg-gray-600"
+            >Contacto</a
+          >
+        </li>
+      </ul>
+    </div>
+
+    <!-- Divider and Theme Toggle -->
+    <div class="flex items-center pl-1 sm:pl-2 border-l border-gray-700">
+      <ThemeToggle />
+    </div>
+
+    <!-- Cart Icon with Badge -->
+    <div class="relative ml-4">
+      <a href="/cart">
+        <button
+          id="cart-button"
+          class="flex items-center text-black dark:text-white"
+        >
+          <!-- Cart Icon -->
+          <Cart />
+          <!-- Product Count Badge -->
+          <span
+            id="cart-count"
+            class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1"
+            >0</span
+          >
+        </button>
+      </a>
+    </div>
+  </nav>
+</header>
+
+
+<style>
+  nav {
+    animation: nav-shadown 1s linear both;
+    animation-timeline: scroll();
+    animation-range: 0 100px;
+  }
+
+  nav {
+    @apply dark:bg-gray-800/90 bg-white/50;
+  }
+
+  @keyframes nav-shadown {
+    0% {
+      @apply dark:bg-gray-800/0 bg-white/0;
+    }
+    to {
+      @apply shadow-lg ring-1 backdrop-blur ring-white/10;
+    }
+  }
+</style>

@@ -1,0 +1,25 @@
+---
+import Layout from "../layouts/Layout.astro"
+import Carrito from "../components/Cart.astro"
+import SectionContainer from "../components/SectionContainer.astro"
+---
+<Layout title="Productos" description="detalles en madera y plastico, detalles en madera, respuestos, figuras y recuerdos - diseño de productos, empaque y línea de producción">
+	<main>
+		<SectionContainer id="carrito-compra">
+			<Carrito>
+			<Carrito />
+		</SectionContainer>
+    </main>
+</Layuot>
+
+<script>
+	document.addEventListener("astro:page-load", () => {
+		const hash = window.location.hash;
+		if (hash) {
+			const element = document.querySelector(hash);
+			if (element) {
+				element.scrollIntoView({ behavior: "smooth" });
+			}
+		}
+	});
+</script>
