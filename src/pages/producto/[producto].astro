@@ -1,0 +1,18 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import SectionProduct from "../../components/SectionProduct.astro";
+import { productos, normalizarID } from "../../data/products"
+
+export function getStaticPaths() {
+    return productos.map((producto) => ({
+        params: { producto: normalizarID(producto.nombre) },
+        props: { producto },
+    }));
+}
+
+const { producto } = Astro.props;
+---
+
+<Layout title={producto.nombre} description={producto.descripcion}>
+    <SectionProduct producto={producto} />
+</Layout>

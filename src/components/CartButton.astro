@@ -1,0 +1,177 @@
+<script>
+    document.addEventListener("astro:page-load", () => {
+        const cartCount = document.getElementById("cart-count");
+    let cartItems = [];
+
+    // Obtén los items del carrito desde el almacenamiento local
+    const storedCartItems = localStorage.getItem("cartItems");
+
+    if (storedCartItems) {
+            try {
+        cartItems = JSON.parse(storedCartItems);
+            } catch (error) {
+        console.error("Error al analizar JSON de cartItems:", error);
+    cartItems = [];
+            }
+        }
+
+        // Actualizar contador de carrito
+        const updateCartCount = () => {
+            const totalItems = cartItems.reduce(
+                (acc: number, item: any) => acc + item.cantidad,
+    0,
+    );
+    if (cartCount) {
+        cartCount.textContent = String(totalItems);
+    cartCount.classList.add("animate-bounce");
+                setTimeout(() => {
+        cartCount.classList.remove("animate-bounce");
+                }, 1000);
+            }
+        };
+
+    // Llamar inmediatamente a updateCartCount para actualizar el contador inicial
+    updateCartCount();
+
+        // Función para actualizar el estado de los botones
+        const updateButtons = () => {
+        document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
+            const productName = button.getAttribute("data-product");
+            const inCart = cartItems.some(
+                (item: any) => item.nombre === productName,
+            );
+            updateButtonState(button as HTMLButtonElement, inCart);
+        });
+        };
+
+        const addToCart = (product: any, button: HTMLButtonElement) => {
+            const buttonText = button.querySelector(".button-text");
+    if (buttonText) {
+        buttonText.textContent = "Agregando...";
+            }
+
+            setTimeout(() => {
+                const existingProduct = cartItems.find(
+                    (item: any) => item.nombre === product.nombre,
+    );
+
+    if (existingProduct) {
+        existingProduct.cantidad += 1;
+                } else {
+        cartItems.push({
+            ...product,
+            cantidad: 1,
+        });
+                }
+
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    updateCartCount();
+    updateCartList();
+    updateButtonState(button, true);
+            });
+        };
+
+    const updateButtonState = (
+    button: HTMLButtonElement,
+    added: boolean,
+        ) => {
+            const buttonText = button.querySelector(".button-text");
+    if (buttonText) {
+        buttonText.textContent = added ? "Agregado" : "Agregar";
+            }
+    if (added) {
+        button.classList.remove(
+            "bg-red-600",
+            "hover:bg-red-300",
+            "dark:bg-red-600",
+            "dark:hover:bg-red-300",
+        );
+    button.classList.add(
+    "bg-red-600",
+    "hover:bg-red-800",
+    "dark:bg-red-600",
+    "dark:hover:bg-red-800",
+    );
+            } else {
+        button.classList.remove(
+            "bg-red-600",
+            "hover:bg-red-800",
+            "dark:bg-red-600",
+            "dark:hover:bg-red-800",
+        );
+    button.classList.add(
+    "bg-red-600",
+    "hover:bg-red-300",
+    "dark:bg-red-600",
+    "dark:hover:bg-red-300",
+    );
+            }
+        };
+
+        document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
+            button.addEventListener("click", (event) => {
+                event.preventDefault();
+
+                const nombre = button.getAttribute("data-product") ?? "";
+                const precio = button.getAttribute("data-precio") ?? "";
+                const imagen = button.getAttribute("data-imagen") ?? "";
+                const material = button.getAttribute("data-material") ?? "";
+                const url = button.getAttribute("data-url") ?? "";
+
+                if (nombre && precio && imagen && material && url) {
+                    const product = { nombre, precio, imagen, material, url };
+                    addToCart(product, button as HTMLButtonElement);
+                } else {
+                    console.error(
+                        "Algunos atributos del producto son nulos o vacíos.",
+                    );
+                }
+            });
+        });
+
+    // Llamar inmediatamente para actualizar el estado inicial de los botones
+    updateButtons();
+
+        // Función para actualizar la lista de productos en el carrito
+        const updateCartList = () => {
+            const cartList = document.getElementById("cart-list");
+    if (cartList) {
+        cartList.innerHTML = ""; // Limpiar la lista antes de actualizar
+        cartItems.forEach((item: any, index: any) => {
+            const listItem = document.createElement("li");
+            listItem.className = "flex items-center gap-4";
+            listItem.innerHTML = `
+            <img src="${item.imagen}" alt="${item.nombre}" class="size-16 rounded object-cover" />
+    <div>
+        <h3 class="text-m text-dark dark:text-white font-bold">${item.nombre}</h3>
+        <dl class="mt-0.5 space-y-px text-[14px] text-dark dark:text-white">
+            <div>
+                <dt class="inline">Material:</dt>
+                <dd class="inline">${item.material}</dd>
+            </div>
+            <div>
+                <dt class="inline">Precio:</dt>
+                <dd class="inline">${item.precio}</dd>
+            </div>
+            <div>
+                <dt class="inline">Cantidad:</dt>
+                <dd class="inline">${item.cantidad}</dd>
+            </div>
+        </dl>
+    </div>
+    <div class="flex flex-1 items-center justify-end gap-2">
+        <input type="number" min="1" value="${item.cantidad}" class="h-8 w-12 rounded border-gray-200 bg-gray-50 p-0 text-center text-xs text-gray-600" onchange="updateQuantity(${index}, this.value)" />
+        <button class="text-dark dark:text-white transition hover:text-red-600" onclick="removeItem(${index})">
+            <span class="sr-only">Remove item</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+            </svg>
+        </button>
+    </div>
+    `;
+    cartList.appendChild(listItem);
+                });
+            }
+        };
+    });
+</script>

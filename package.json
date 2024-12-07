@@ -10,17 +10,33 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@analogjs/astro-angular": "^1.8.0",
+    "@angular/common": "^18.2.4",
+    "@angular/core": "^18.2.5",
+    "@angular/platform-browser": "^18.2.5",
+    "@angular/platform-browser-dynamic": "^18.2.5",
     "@astrojs/check": "^0.9.3",
     "@astrojs/react": "^3.6.2",
-    "@astrojs/tailwind": "^5.1.0",
-    "astro": "^4.15.1",
+    "@astrojs/tailwind": "^5.1.1",
+    "@fontsource-variable/onest": "^5.1.0",
+    "astro": "^4.15.5",
     "autoprefixer": "^10.4.20",
     "flowbite": "^2.5.1",
     "kathcraft": "file:",
     "postcss": "^8.4.41",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "tailwindcss": "^3.4.10",
+    "tailwindcss": "^3.4.10"
+  },
+  "devDependencies": {
+    "@astrojs/ts-plugin": "^1.10.2",
+    "@types/react": "^18.3.7",
+    "@types/react-dom": "^18.3.0",
     "typescript": "^5.5.4"
-  }
+  },
+  "description": "```sh\r npm create astro@latest -- --template basics\r ```",
+  "main": "tailwind.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

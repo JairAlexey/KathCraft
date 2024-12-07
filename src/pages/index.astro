@@ -8,7 +8,7 @@ import SectionContainer from '../components/SectionContainer.astro';
 import Contact from '../components/Contact.astro';
 ---
 
-<Layout title="Pagina principal" description='pagina principal pra la impresio 3d....'>
+<Layout title="KathCraft" description='pSomos un centro creativo, desarrollamos ideas y las convertimos en realidad. Utilizamos maquinado CNC, impresión 3D y diseño asistido por computador para crear productos adaptados a tu necesidad.'>
 	<main>			  
 		<SectionContainer id="inicio">
 			<Hero>
@@ -33,15 +33,3 @@ import Contact from '../components/Contact.astro';
 		
 	</main>
 </Layout>
-
-<script>
-	document.addEventListener("astro:page-load", () => {
-		const hash = window.location.hash;
-		if (hash) {
-			const element = document.querySelector(hash);
-			if (element) {
-				element.scrollIntoView({ behavior: "smooth" });
-			}
-		}
-	});
-</script>

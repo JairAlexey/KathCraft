@@ -1,0 +1,209 @@
+<script>
+    document.addEventListener("astro:page-load", () => {
+        const cartList = document.getElementById("cart-list");
+        const emptyCartMessage = document.getElementById("empty-cart-message");
+        const whatsappButton = document.getElementById("whatsapp-button");
+        const subtotalElement = document.getElementById("subtotal");
+        const subtotalAmountElement =
+            document.getElementById("subtotal-amount");
+        const cartCount = document.getElementById("cart-count");
+
+        function updateCartDisplay() {
+            const cartItems = JSON.parse(
+                localStorage.getItem("cartItems") || "[]",
+            );
+
+            if (cartItems.length === 0) {
+                if (cartList) cartList.classList.add("hidden");
+                if (emptyCartMessage)
+                    emptyCartMessage.classList.remove("hidden");
+                if (whatsappButton) whatsappButton.classList.add("hidden");
+                if (subtotalElement) subtotalElement.classList.add("hidden");
+            } else {
+                if (cartList) cartList.classList.remove("hidden");
+                if (emptyCartMessage) emptyCartMessage.classList.add("hidden");
+                if (whatsappButton) whatsappButton.classList.remove("hidden");
+                if (subtotalElement) subtotalElement.classList.remove("hidden");
+            }
+
+            updateCartList();
+            updateSubtotal();
+            updateCartCount();
+        }
+
+        function updateSubtotal() {
+            const cartItems = JSON.parse(
+                localStorage.getItem("cartItems") || "[]",
+            );
+            const subtotal = cartItems.reduce((total: number, item: any) => {
+                const precio = parseFloat(item.precio.replace("$", ""));
+                return total + precio * item.cantidad;
+            }, 0);
+
+            if (subtotalAmountElement) {
+                subtotalAmountElement.textContent = subtotal.toFixed(2);
+            }
+        }
+
+        function updateCartCount() {
+            const cartItems = JSON.parse(
+                localStorage.getItem("cartItems") || "[]",
+            );
+            const totalItems = cartItems.reduce(
+                (acc: number, item: any) => acc + item.cantidad,
+                0,
+            );
+            if (cartCount) {
+                cartCount.textContent = String(totalItems);
+            }
+        }
+
+        function updateCartList() {
+            const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
+            const baseUrl = window.location.origin; // Obtiene la URL base
+            if (cartList) {
+                cartList.innerHTML = ""; // Limpiar la lista antes de actualizar
+                cartItems.forEach((item: any, index: number) => {
+                    const listItem = document.createElement("li");
+                    listItem.className = "flex items-center gap-4";
+                    listItem.innerHTML = `
+                    <img 
+                        src="${item.imagen}" 
+                        alt="${item.nombre}" 
+                        class="size-16 rounded object-cover" 
+                        width="64" 
+                        height="64" 
+                        loading="lazy"
+                    />
+                    <div>
+                        <h3 class="text-m text-dark dark:text-white font-bold">
+                            <a href="${baseUrl}${item.url}" class="hover:text-red-600">${item.nombre}</a>
+                        </h3>
+                        <dl class="mt-0.5 space-y-px text-[14px] text-dark dark:text-white">
+                        <div>
+                            <dt class="inline">Material:</dt>
+                            <dd class="inline">${item.material}</dd>
+                        </div>
+                        <div>
+                            <dt class="inline">Precio:</dt>
+                            <dd class="inline">${item.precio}</dd>
+                        </div>
+                        </dl>
+                    </div>
+                    <div class="flex flex-1 items-center justify-end gap-2">
+                        <div class="flex items-center border border-gray-200 rounded">
+                        <button class="px-2 py-1 text-gray-600 hover:bg-gray-100 decrease-quantity" data-index="${index}">-</button>
+                        <span class="px-2 py-1 text-center w-10 cart-quantity" data-index="${index}">${item.cantidad}</span>
+                        <button class="px-2 py-1 text-gray-600 hover:bg-gray-100 increase-quantity" data-index="${index}">+</button>
+                        </div>
+                        <button class="text-dark dark:text-white transition hover:text-red-600 remove-item" data-index="${index}">
+                        <span class="sr-only">Eliminar producto</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
+                        </button>
+                    </div>
+                    `;
+                    cartList.appendChild(listItem);
+                });
+
+                // Agregar event listeners para los botones de eliminar y los botones de cantidad
+                document.querySelectorAll(".remove-item").forEach((button) => {
+                    button.addEventListener(
+                        "click",
+                        function (this: HTMLElement) {
+                            const index = parseInt(
+                                this.getAttribute("data-index") || "0",
+                            );
+                            removeItem(index);
+                        },
+                    );
+                });
+
+                document
+                    .querySelectorAll(".decrease-quantity")
+                    .forEach((button) => {
+                        button.addEventListener(
+                            "click",
+                            function (this: HTMLElement) {
+                                const index = parseInt(
+                                    this.getAttribute("data-index") || "0",
+                                );
+                                updateQuantity(index, -1);
+                            },
+                        );
+                    });
+
+                document
+                    .querySelectorAll(".increase-quantity")
+                    .forEach((button) => {
+                        button.addEventListener(
+                            "click",
+                            function (this: HTMLElement) {
+                                const index = parseInt(
+                                    this.getAttribute("data-index") || "0",
+                                );
+                                updateQuantity(index, 1);
+                            },
+                        );
+                    });
+            }
+        }
+
+        function removeItem(index: number) {
+            let cartItems = JSON.parse(
+                localStorage.getItem("cartItems") || "[]",
+            );
+            cartItems.splice(index, 1);
+            localStorage.setItem("cartItems", JSON.stringify(cartItems));
+            updateCartDisplay();
+        }
+
+        function updateQuantity(index: number, change: number) {
+            let cartItems = JSON.parse(
+                localStorage.getItem("cartItems") || "[]",
+            );
+            const newQuantity = cartItems[index].cantidad + change;
+            if (newQuantity >= 1) {
+                cartItems[index].cantidad = newQuantity;
+                localStorage.setItem("cartItems", JSON.stringify(cartItems));
+                updateCartDisplay(); // Esto debería recalcular el subtotal
+            }
+        }
+
+        // Inicializar la visualización del carrito
+        updateCartDisplay();
+
+        const sendCartToWhatsApp = () => {
+        const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
+        const phoneNumber = "5930999109597";
+        const baseUrl = window.location.origin; // Obtiene la URL base
+        let message = "Hola! Me gustaría hacer un pedido con los siguientes productos:\n\n";
+
+        cartItems.forEach((item: any, index: number) => {
+            message += `${index + 1}. ${item.nombre}\n`;
+            message += `   Cantidad: ${item.cantidad}\n`;
+            message += `   Precio: ${item.precio}\n`;
+            message += `   URL: ${baseUrl}${item.url}\n\n`;
+        });
+
+        // Calcular y añadir el subtotal
+        const subtotal = cartItems.reduce((total: number, item: any) => {
+            const precio = parseFloat(item.precio.replace("$", ""));
+            return total + precio * item.cantidad;
+        }, 0);
+
+        message += `Subtotal: $${subtotal.toFixed(2)}`;
+
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+        window.open(whatsappURL, "_blank");
+    };
+
+
+        if (whatsappButton) {
+            whatsappButton.addEventListener("click", sendCartToWhatsApp);
+        }
+    });
+</script>
